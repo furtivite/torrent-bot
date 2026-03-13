@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          # безопасные заглушки для тестового окружения
+          BOT_TOKEN: "TEST_TOKEN"
+          CHAT_ID: "0"
+          ALLOWED_USERNAMES: "testuser"
+          DATA_ROOT: "/tmp"
+          TRACKERS_DIR: "/tmp/trackers"
+          TRANSMISSION_HOST: "127.0.0.1"
+          TRANSMISSION_PORT: "9091"
+          TRANSMISSION_USERNAME: "user"
+          TRANSMISSION_PASSWORD: "pass"
+          DOWNLOADED_DIR: "/tmp/downloaded"
+          WEB_UI_URL: "https://example.local/transmission/web/"
+          CERT_FILE_PATH: "/tmp/cert.crt"
+        run: |
+          mkdir -p "$TRACKERS_DIR" "$DOWNLOADED_DIR"
+          pytest
+
