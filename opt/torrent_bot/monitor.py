@@ -6,6 +6,7 @@ from .config import CHECK_INTERVAL_SECONDS, STALL_MINUTES
 from .state import (
     completed_reported,
     seen_torrents,
+    stalled_notified,
     stalled_since,
 )
 from . import state
@@ -96,7 +97,7 @@ async def monitor_loop() -> None:
                 if is_downloading and is_incomplete and peers == 0 and rate_download == 0:
                     if t.id not in stalled_since:
                         stalled_since[t.id] = time.time()
-                    else:
+                    elif t.id not in stalled_notified:
                         stalled_for = time.time() - stalled_since[t.id]
                         if stalled_for >= STALL_MINUTES * 60:
                             tg_send(
@@ -104,14 +105,17 @@ async def monitor_loop() -> None:
                                 f"Прогресс: {round((t.percent_done or 0) * 100, 1)}%\n"
                                 f"Не качается уже {STALL_MINUTES}+ мин"
                             )
+                            stalled_notified.add(t.id)
                             stalled_since.pop(t.id, None)
                 else:
                     stalled_since.pop(t.id, None)
+                    stalled_notified.discard(t.id)
 
             removed_ids = set(seen_torrents.keys()) - current_ids
             for torrent_id in removed_ids:
                 seen_torrents.pop(torrent_id, None)
                 stalled_since.pop(torrent_id, None)
+                stalled_notified.discard(torrent_id)
                 completed_reported.discard(torrent_id)
 
             if not state.initial_snapshot_done:
