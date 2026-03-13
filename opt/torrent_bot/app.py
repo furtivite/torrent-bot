@@ -10,19 +10,19 @@ from telegram.ext import (
     filters,
 )
 
-from config import BOT_TOKEN, TRACKERS_DIR
-from handlers.buttons import handle_menu_button, handle_start_inline_button, help_cmd
-from handlers.commands import (
+from .config import BOT_TOKEN, TRACKERS_DIR
+from .handlers.buttons import handle_menu_button, handle_start_inline_button, help_cmd
+from .handlers.commands import (
     space_cmd,
     start_cmd,
     torrents_cmd,
     torrents_page_callback,
 )
-from handlers.documents import handle_document
-from handlers.help_menu import handle_help_callbacks
-from handlers.magnets import handle_magnet
-from monitor import monitor_loop
-from utils.notify import tg_send
+from .handlers.documents import handle_document
+from .handlers.help_menu import handle_help_callbacks
+from .handlers.magnets import handle_magnet
+from .monitor import monitor_loop
+from .utils.notify import tg_send
 
 
 logging.basicConfig(

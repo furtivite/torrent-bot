@@ -1,10 +1,10 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
-from transmission_client import get_client
-from utils.auth import deny_access, is_authorized
-from utils.disk import disk_report, format_bytes
-from telegram_ui import main_menu_keyboard, start_inline_keyboard
+from ..transmission_client import get_client
+from ..utils.auth import deny_access, is_authorized
+from ..utils.disk import disk_report, format_bytes
+from ..telegram_ui import main_menu_keyboard, start_inline_keyboard
 
 
 TORRENTS_PAGE_SIZE = 20

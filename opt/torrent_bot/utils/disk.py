@@ -1,6 +1,6 @@
 import shutil
 
-from config import DATA_ROOT
+from ..config import DATA_ROOT
 
 
 def format_bytes(size: int) -> str:

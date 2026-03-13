@@ -4,12 +4,12 @@ import time
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from config import DOWNLOADED_DIR, TRACKERS_DIR
-from transmission_client import get_client
-from utils.auth import deny_access, get_username, is_authorized
-from utils.notify import tg_send
-from utils.torrent_files import is_valid_torrent_file
-from utils.torrent_layout import read_torrent_layout, torrent_already_downloaded
+from ..config import DOWNLOADED_DIR, TRACKERS_DIR
+from ..transmission_client import get_client
+from ..utils.auth import deny_access, get_username, is_authorized
+from ..utils.notify import tg_send
+from ..utils.torrent_files import is_valid_torrent_file
+from ..utils.torrent_layout import read_torrent_layout, torrent_already_downloaded
 
 
 # Защита от спама файлами:
