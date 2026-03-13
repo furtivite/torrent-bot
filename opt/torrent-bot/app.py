@@ -11,7 +11,7 @@ from telegram.ext import (
 )
 
 from config import BOT_TOKEN, TRACKERS_DIR
-from handlers.buttons import handle_menu_button, help_cmd
+from handlers.buttons import handle_menu_button, handle_start_inline_button, help_cmd
 from handlers.commands import (
     space_cmd,
     start_cmd,
@@ -47,6 +47,12 @@ def main():
     app.add_handler(CommandHandler("space", space_cmd))
     app.add_handler(CommandHandler("torrents", torrents_cmd))
 
+    app.add_handler(
+        CallbackQueryHandler(
+            handle_start_inline_button,
+            pattern=r"^(space|torrents|add_magnet|help_menu)$",
+        )
+    )
     app.add_handler(
         CallbackQueryHandler(
             torrents_page_callback,
