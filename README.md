@@ -184,6 +184,11 @@ sudo systemctl status torrent-bot.service
 
 - Более подробное описание архитектуры и потоков данных: `docs/overview.md`.
 - Чек‑лист для развёртывания и отладки: `docs/setup-ubuntu-ssh.md`.
+- Требования к настройке Transmission: `docs/transmission-requirements.md`.
+
+---
+
+## Тесты
 
 ---
 
@@ -195,4 +200,8 @@ sudo systemctl status torrent-bot.service
   - уведомления о состоянии торрентов и диска;
   - интеграция с systemd и конфигурация через `/etc/torrent-bot.env`.
   - добавлена документация и правила для AI‑агентов в `.cursor/`.
+
+- **Тесты**:
+  - добавлены базовые pytest‑тесты для утилит (`utils`) и части логики безопасности торрентов;
+  - запуск: из корня проекта выполнить `pytest`.
 

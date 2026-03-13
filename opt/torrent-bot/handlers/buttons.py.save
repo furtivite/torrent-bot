@@ -1,0 +1,31 @@
+
+from telegram import Update
+from telegram.ext import ContextTypes
+
+from handlers.commands import space_cmd, torrents_cmd
+from telegram_ui import main_menu_keyboard
+
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None:
+        return
+
+    await update.message.reply_text(
+        "Что умеет бот:\n"
+        "• присылать .torrent файлы\n"
+        "• принимать magnet-ссылки\n"
+        "• показывать место на диске\n"
+        "• показывать список торрентов\n"
+        "• уведомлять о старте, завершении и зависании",
+        reply_markup=main_menu_keyboard(),
+    )
+
+
+async def handle_menu_button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None or update.message.text is None:
+        return
+
+    text = update.message.text.strip()
+
+    if text == "💾 Место на диске":
+        await space_cmd(update, co

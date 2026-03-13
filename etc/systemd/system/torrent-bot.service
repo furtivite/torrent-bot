@@ -1,0 +1,19 @@
+[Unit]
+Description=Telegram Torrent Bot
+After=network-online.target transmission-daemon.service
+Wants=network-online.target
+Requires=transmission-daemon.service
+RequiresMountsFor=/mnt/data
+
+[Service]
+Type=simple
+ExecStart=/opt/torrent-bot-venv/bin/python /opt/torrent-bot/app.py
+Restart=always
+RestartSec=5
+User=root
+WorkingDirectory=/opt/torrent-bot
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/etc/torrent-bot.env
+
+[Install]
+WantedBy=multi-user.target
