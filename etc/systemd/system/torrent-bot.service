@@ -7,11 +7,11 @@ RequiresMountsFor=/mnt/data
 
 [Service]
 Type=simple
-ExecStart=/opt/torrent-bot-venv/bin/python /opt/torrent-bot/app.py
+ExecStart=/opt/torrent-bot-venv/bin/python /opt/torrent-bot-project/opt/torrent-bot/app.py
 Restart=always
 RestartSec=5
-User=root
-WorkingDirectory=/opt/torrent-bot
+User=torrent-bot
+WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot
 Environment=PYTHONUNBUFFERED=1
 EnvironmentFile=/etc/torrent-bot.env
 

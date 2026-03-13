@@ -43,3 +43,8 @@ jobs:
           mkdir -p "$TRACKERS_DIR" "$DOWNLOADED_DIR"
           pytest
 
+      - name: Run ruff (lint)
+        run: |
+          ruff check opt/torrent-bot tests
+
+

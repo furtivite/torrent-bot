@@ -59,7 +59,7 @@ def inspect_torrent_layout_safety(torrent_name: str, files: list[tuple]) -> tupl
         return False, "Некорректное имя торрента."
 
     if len(files) > MAX_TORRENT_FILES:
-        return False, f"Torrent отклонён: слишком много файлов ({len(files)})."
+        return False, f"Торрент отклонён: слишком много файлов ({len(files)})."
 
     total_size = 0
 
@@ -67,25 +67,25 @@ def inspect_torrent_layout_safety(torrent_name: str, files: list[tuple]) -> tupl
         rel_path_str = str(rel_path)
 
         if len(rel_path_str) > MAX_PATH_LENGTH:
-            return False, f"Torrent отклонён: слишком длинный путь ({rel_path_str[:120]}...)."
+            return False, f"Торрент отклонён: слишком длинный путь ({rel_path_str[:120]}...)."
 
         parts = rel_path.parts
         if len(parts) > MAX_PATH_DEPTH:
-            return False, f"Torrent отклонён: слишком глубокая вложенность пути ({rel_path_str[:120]}...)."
+            return False, f"Торрент отклонён: слишком глубокая вложенность пути ({rel_path_str[:120]}...)."
 
         for part in parts:
             if part in {"..", ".", ""}:
-                return False, "Torrent отклонён: найден небезопасный путь."
+                return False, "Торрент отклонён: найден небезопасный путь."
             if len(part) > 255:
-                return False, f"Torrent отклонён: слишком длинное имя файла/папки ({part[:120]}...)."
+                return False, f"Торрент отклонён: слишком длинное имя файла/папки ({part[:120]}...)."
 
         if expected_size < 0:
-            return False, "Torrent отклонён: найден отрицательный размер файла."
+            return False, "Торрент отклонён: найден отрицательный размер файла."
 
         total_size += int(expected_size)
 
         if total_size > MAX_TORRENT_TOTAL_SIZE_BYTES:
-            return False, "Torrent отклонён: суммарный размер данных слишком большой."
+            return False, "Торрент отклонён: суммарный размер данных слишком большой."
 
     return True, ""
 
@@ -122,7 +122,7 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await message.reply_text(
             f"Торрент {safe_name} отклонён: файл слишком большой ({file_size} байт)."
         )
-        tg_send(f"🛡 Отклонён слишком большой torrent от @{username}: {safe_name} ({file_size} bytes)")
+        tg_send(f"🛡 Отклонён слишком большой торрент от @{username}: {safe_name} ({file_size} bytes)")
         return
 
     try:
@@ -142,24 +142,24 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 await message.reply_text(
                     f"Торрент {safe_name} отклонён: файл слишком большой ({actual_size} байт)."
                 )
-                tg_send(f"🛡 Отклонён слишком большой torrent от @{username}: {safe_name} ({actual_size} bytes)")
+                tg_send(f"🛡 Отклонён слишком большой торрент от @{username}: {safe_name} ({actual_size} bytes)")
                 return
         except Exception as e:
             temp_path.unlink(missing_ok=True)
             await message.reply_text(f"Ошибка: не удалось проверить размер файла {safe_name}.")
-            tg_send(f"❌ Ошибка проверки размера torrent от @{username}: {safe_name}: {type(e).__name__}: {e}")
+            tg_send(f"❌ Ошибка проверки размера торрента от @{username}: {safe_name}: {type(e).__name__}: {e}")
             return
 
         try:
             if not is_valid_torrent_file(temp_path):
                 temp_path.unlink(missing_ok=True)
-                await message.reply_text(f"Файл {safe_name} удалён: это не torrent.")
-                tg_send(f"🗑 Удалён невалидный файл от @{username}: {safe_name}")
+                await message.reply_text(f"Файл {safe_name} удалён: это не торрент.")
+                tg_send(f"🗑 Удалён невалидный торрент от @{username}: {safe_name}")
                 return
         except Exception as e:
             temp_path.unlink(missing_ok=True)
-            await message.reply_text(f"Ошибка: не удалось проверить, что файл {safe_name} является torrent.")
-            tg_send(f"❌ Ошибка валидации torrent от @{username}: {safe_name}: {type(e).__name__}: {e}")
+            await message.reply_text(f"Ошибка: не удалось проверить, что файл {safe_name} является торрентом.")
+            tg_send(f"❌ Ошибка валидации торрента от @{username}: {safe_name}: {type(e).__name__}: {e}")
             return
 
         try:
@@ -167,14 +167,14 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         except Exception as e:
             temp_path.unlink(missing_ok=True)
             await message.reply_text(f"Ошибка: не удалось прочитать содержимое torrent-файла {safe_name}.")
-            tg_send(f"❌ Ошибка чтения метаданных torrent от @{username}: {safe_name}: {type(e).__name__}: {e}")
+            tg_send(f"❌ Ошибка чтения метаданных торрента от @{username}: {safe_name}: {type(e).__name__}: {e}")
             return
 
         is_safe, safety_reason = inspect_torrent_layout_safety(torrent_name, files)
         if not is_safe:
             temp_path.unlink(missing_ok=True)
             await message.reply_text(f"Файл {safe_name} отклонён. {safety_reason}")
-            tg_send(f"🛡 Torrent bomb / unsafe torrent отклонён от @{username}: {safe_name}: {safety_reason}")
+            tg_send(f"🛡 Torrent bomb / небезопасный торрент отклонён от @{username}: {safe_name}: {safety_reason}")
             return
 
         try:
@@ -182,7 +182,7 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         except Exception as e:
             temp_path.unlink(missing_ok=True)
             await message.reply_text(f"Ошибка: не удалось проверить, скачан ли торрент {safe_name} ранее.")
-            tg_send(f"❌ Ошибка проверки downloaded для @{username}: {safe_name}: {type(e).__name__}: {e}")
+            tg_send(f"❌ Ошибка проверки already-downloaded для @{username}: {safe_name}: {type(e).__name__}: {e}")
             return
 
         if already_downloaded:
@@ -211,10 +211,10 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         except Exception as e:
             temp_path.unlink(missing_ok=True)
             await message.reply_text(f"Ошибка: не удалось сохранить торрент {safe_name} в папку trackers.")
-            tg_send(f"❌ Ошибка сохранения torrent от @{username}: {safe_name}: {type(e).__name__}: {e}")
+            tg_send(f"❌ Ошибка сохранения торрента от @{username}: {safe_name}: {type(e).__name__}: {e}")
             return
 
-        await message.reply_text(f"Torrent сохранён: {safe_name}")
+        await message.reply_text(f"Торрент сохранён: {safe_name}")
         tg_send(f"📥 Торрент получен от @{username}: {safe_name}")
 
     except Exception as e:

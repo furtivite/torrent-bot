@@ -146,6 +146,12 @@ sudo cp /opt/torrent-bot-project/etc/systemd/system/torrent-bot.service /etc/sys
   ExecStart=/opt/torrent-bot-venv/bin/python app.py
   ```
 
+- `User` установлен в отдельного системного пользователя, например:
+
+  ```ini
+  User=torrent-bot
+  ```
+
 - указан `EnvironmentFile=/etc/torrent-bot.env`.
 
 Далее:
@@ -165,7 +171,8 @@ sudo systemctl status torrent-bot.service
 настроен в `CERT_FILE_PATH`. Это удобно, когда HTTPS‑терминация (например, через Caddy/nginx)
 использует самоподписанный или частный корневой сертификат.
 
-1. Скопируйте файл корневого сертификата в каталог, указанный в `CERT_FILE_PATH`, например:
+1. Скопируйте файл корневого сертификата в каталог, указанный в `CERT_FILE_PATH`, например
+   (пути `/mnt/data/...` ниже — только пример, вы можете выбрать свою структуру каталогов):
 
    ```bash
    sudo cp /path/to/your-root-ca.crt /mnt/data/certs/caddy-local-root.crt
@@ -188,7 +195,32 @@ sudo systemctl status torrent-bot.service
 
 ---
 
-## 10. Обновление бота из GitHub по SSH
+## 10. Создание отдельного пользователя для сервиса
+
+Для повышения безопасности рекомендуется запускать сервис не от root, а от отдельного системного
+пользователя, у которого есть доступ только к нужным каталогам.
+
+Пример:
+
+```bash
+sudo useradd --system --home /opt/torrent-bot-project --shell /usr/sbin/nologin torrent-bot
+
+# Дать пользователю доступ к коду бота
+sudo chown -R torrent-bot:torrent-bot /opt/torrent-bot-project
+
+# Убедиться, что у torrent-bot есть права на TRACKERS_DIR и DOWNLOADED_DIR
+# (ниже пример, конкретные пути берутся из /etc/torrent-bot.env):
+sudo chown -R torrent-bot:torrent-bot /mnt/data/trackers /mnt/data/downloaded
+```
+
+Обратите внимание: если Transmission запущен под другим пользователем, возможно, потребуется
+использовать общую группу и более точную настройку прав. В этом случае не меняйте владельца
+каталогов Transmission, а настройте права доступа так, чтобы и Transmission, и `torrent-bot`
+имели нужные разрешения.
+
+---
+
+## 11. Обновление бота из GitHub по SSH
 
 1. На локальной машине:
 
@@ -215,7 +247,7 @@ sudo systemctl status torrent-bot.service
 
 ---
 
-## 11. Напоминание о границах проекта
+## 12. Напоминание о границах проекта
 
 - Этот репозиторий:
   - **не устанавливает и не настраивает Transmission**;

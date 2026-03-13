@@ -3,4 +3,5 @@ transmission-rpc>=4.0.0
 requests>=2.0.0
 bencodepy>=0.9.5
 pytest>=7.0.0
+ruff>=0.6.0
 

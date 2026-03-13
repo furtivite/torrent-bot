@@ -23,7 +23,8 @@ TRANSMISSION_USERNAME = os.environ["TRANSMISSION_USERNAME"]
 TRANSMISSION_PASSWORD = os.environ["TRANSMISSION_PASSWORD"]
 
 WEB_UI_URL = os.environ["WEB_UI_URL"]
-CERT_FILE_PATH = Path(os.environ["CERT_FILE_PATH"])
+# Путь к корневому сертификату опционален; по умолчанию используем типовой каталог.
+CERT_FILE_PATH = Path(os.environ.get("CERT_FILE_PATH", "/mnt/data/certs/caddy-local-root.crt"))
 
 CHECK_INTERVAL_SECONDS = 60
 STALL_MINUTES = 30

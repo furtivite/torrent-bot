@@ -119,6 +119,9 @@ async def monitor_loop() -> None:
 
         except Exception as e:
             log.exception("Monitor loop failed: %s", e)
-            tg_send_error("monitor_loop_failed", f"❌ Ошибка torrent-bot: {e}")
+            tg_send_error(
+                "monitor_loop_failed",
+                "❌ Ошибка работы мониторинга torrent-bot. Подробнее смотри логи на сервере.",
+            )
 
         await asyncio.sleep(CHECK_INTERVAL_SECONDS)
