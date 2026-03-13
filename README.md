@@ -20,16 +20,16 @@
 
 ## Архитектура
 
-Основной код живёт в `opt/torrent-bot/`:
+Основной код живёт внутри пакета `opt.torrent_bot`:
 
-- `app.py` — точка входа, регистрация хендлеров.
-- `config.py` — загрузка конфигурации из `/etc/torrent-bot.env`.
-- `monitor.py` — фоновой мониторинг Transmission и уведомления.
-- `transmission_client.py` — обёртка над `transmission-rpc`.
-- `state.py` — простое хранение состояния мониторинга.
-- `handlers/` — Telegram‑хендлеры команд, документов, кнопок и magnet‑ссылок.
-- `utils/` — утилиты (аутентификация, диск, уведомления, работа с `.torrent` и т.п.).
-- `telegram_ui.py` — клавиатуры и кнопки Telegram.
+- `opt/torrent_bot/app.py` — точка входа, регистрация хендлеров.
+- `opt/torrent_bot/config.py` — загрузка конфигурации из `/etc/torrent-bot.env`.
+- `opt/torrent_bot/monitor.py` — фоновой мониторинг Transmission и уведомления.
+- `opt/torrent_bot/transmission_client.py` — обёртка над `transmission-rpc`.
+- `opt/torrent_bot/state.py` — простое хранение состояния мониторинга.
+- `opt/torrent_bot/handlers/` — Telegram‑хендлеры команд, документов, кнопок и magnet‑ссылок.
+- `opt/torrent_bot/utils/` — утилиты (аутентификация, диск, уведомления, работа с `.torrent` и т.п.).
+- `opt/torrent_bot/telegram_ui.py` — клавиатуры и кнопки Telegram.
 
 Подробнее см. в `docs/overview.md`.
 
@@ -75,9 +75,9 @@ ssh user@your-server
 
 ```bash
 cd /opt
-sudo git clone https://github.com/your-user/torrent-bot-project.git
-sudo chown -R "$USER":"$USER" torrent-bot-project
-cd torrent-bot-project
+sudo git clone https://github.com/your-user/torrent-bot.git
+sudo chown -R "$USER":"$USER" torrent-bot
+cd torrent-bot
 ```
 
 ### 3. Создать виртуальное окружение и установить зависимости
@@ -131,17 +131,17 @@ ENV
 ### 5. Проверка ручным запуском
 
 ```bash
-cd /opt/torrent-bot-project/opt/torrent-bot
+cd /opt/torrent-bot
 source /opt/torrent-bot-venv/bin/activate
 
-BOT_TOKEN=... CHAT_ID=... ALLOWED_USERNAMES=... \
-TRANSMISSION_HOST=... TRANSMISSION_PORT=... \
-TRANSMISSION_USERNAME=... TRANSMISSION_PASSWORD=... \
-TRACKERS_DIR=... DOWNLOADED_DIR=... WEB_UI_URL=... CERT_FILE_PATH=... \
-python app.py
+set -a
+source /etc/torrent-bot.env
+set +a
+
+python -m opt.torrent_bot.app
 ```
 
-Удобнее просто экспортировать переменные из `/etc/torrent-bot.env` через systemd (см. ниже), но для отладки можно задавать вручную.
+Удобнее запускать бота через systemd (см. ниже), но для отладки можно стартовать его вручную этим способом.
 
 Отправьте боту `/start` из Telegram и убедитесь, что он отвечает и видит Transmission.
 
@@ -149,28 +149,36 @@ python app.py
 
 ## Установка как systemd‑сервис
 
-Пример unit‑файла уже лежит в `etc/systemd/system/torrent-bot.service`.  
-Установите его в systemd:
+Пример unit‑файла можно создать на основе следующей конфигурации и установить в systemd:
 
 ```bash
-sudo cp etc/systemd/system/torrent-bot.service /etc/systemd/system/torrent-bot.service
+sudo tee /etc/systemd/system/torrent-bot.service > /dev/null <<'UNIT'
+[Unit]
+Description=Telegram Torrent Bot
+After=network-online.target transmission-daemon.service
+Wants=network-online.target
+Requires=transmission-daemon.service
+RequiresMountsFor=/mnt/data
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=torrent-bot
+WorkingDirectory=/opt/torrent-bot
+ExecStart=/opt/torrent-bot-venv/bin/python -m opt.torrent_bot.app
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/etc/torrent-bot.env
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
 sudo systemctl daemon-reload
 sudo systemctl enable torrent-bot.service
 sudo systemctl start torrent-bot.service
 sudo systemctl status torrent-bot.service
 ```
-
-Убедитесь, что в `torrent-bot.service` указаны:
-
-- корректный путь до virtualenv (`/opt/torrent-bot-venv/bin/python`);
-- корректный путь к `app.py` внутри репозитория, например:
-
-  ```ini
-  WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot
-  ExecStart=/opt/torrent-bot-venv/bin/python app.py
-  ```
-
-- путь к файлу `/etc/torrent-bot.env` через `EnvironmentFile=/etc/torrent-bot.env`.
 
 ---
 
@@ -202,6 +210,7 @@ sudo systemctl status torrent-bot.service
 - Чек‑лист для развёртывания и отладки: `docs/setup-ubuntu-ssh.md`.
 - Требования к настройке Transmission: `docs/transmission-requirements.md`.
 - Обновление уже установленного бота: `docs/how-to-update.md`.
+- Создание Telegram‑бота и настройка токена/чат‑ID: `docs/how-to-create-telegram-bot.md`.
 
 ---
 

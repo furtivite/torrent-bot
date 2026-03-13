@@ -49,9 +49,9 @@ sudo apt install -y python3.12 python3.12-venv git
 
 ```bash
 cd /opt
-sudo git clone https://github.com/your-user/torrent-bot-project.git
-sudo chown -R "$USER":"$USER" torrent-bot-project
-cd torrent-bot-project
+sudo git clone https://github.com/your-user/torrent-bot.git
+sudo chown -R "$USER":"$USER" torrent-bot
+cd torrent-bot
 ```
 
 ---
@@ -105,11 +105,14 @@ ENV
 ## 7. Проверка в интерактивном режиме
 
 ```bash
-cd /opt/torrent-bot-project/opt/torrent-bot
+cd /opt/torrent-bot
 source /opt/torrent-bot-venv/bin/activate
 
-export $(grep -v '^#' /etc/torrent-bot.env | xargs)
-python app.py
+set -a
+source /etc/torrent-bot.env
+set +a
+
+python -m opt.torrent_bot.app
 ```
 
 Проверьте:
@@ -125,38 +128,31 @@ python app.py
 
 ## 8. Установка systemd‑сервиса
 
-Скопируйте unit‑файл:
+Создайте unit‑файл:
 
 ```bash
-sudo cp /opt/torrent-bot-project/etc/systemd/system/torrent-bot.service /etc/systemd/system/torrent-bot.service
-```
+sudo tee /etc/systemd/system/torrent-bot.service > /dev/null <<'UNIT'
+[Unit]
+Description=Telegram Torrent Bot
+After=network-online.target transmission-daemon.service
+Wants=network-online.target
+Requires=transmission-daemon.service
+RequiresMountsFor=/mnt/data
 
-Убедитесь, что в `/etc/systemd/system/torrent-bot.service`:
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=torrent-bot
+WorkingDirectory=/opt/torrent-bot
+ExecStart=/opt/torrent-bot-venv/bin/python -m opt.torrent_bot.app
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/etc/torrent-bot.env
 
-- `ExecStart` указывает на Python из virtualenv и путь к `app.py` внутри репозитория:
+[Install]
+WantedBy=multi-user.target
+UNIT
 
-  ```ini
-  ExecStart=/opt/torrent-bot-venv/bin/python /opt/torrent-bot-project/opt/torrent-bot/app.py
-  ```
-
-  или эквивалентно:
-
-  ```ini
-  WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot
-  ExecStart=/opt/torrent-bot-venv/bin/python app.py
-  ```
-
-- `User` установлен в отдельного системного пользователя, например:
-
-  ```ini
-  User=torrent-bot
-  ```
-
-- указан `EnvironmentFile=/etc/torrent-bot.env`.
-
-Далее:
-
-```bash
 sudo systemctl daemon-reload
 sudo systemctl enable torrent-bot.service
 sudo systemctl start torrent-bot.service
@@ -203,10 +199,10 @@ sudo systemctl status torrent-bot.service
 Пример:
 
 ```bash
-sudo useradd --system --home /opt/torrent-bot-project --shell /usr/sbin/nologin torrent-bot
+sudo useradd --system --home /opt/torrent-bot --shell /usr/sbin/nologin torrent-bot
 
 # Дать пользователю доступ к коду бота
-sudo chown -R torrent-bot:torrent-bot /opt/torrent-bot-project
+sudo chown -R torrent-bot:torrent-bot /opt/torrent-bot
 
 # Убедиться, что у torrent-bot есть права на TRACKERS_DIR и DOWNLOADED_DIR
 # (ниже пример, конкретные пути берутся из /etc/torrent-bot.env):
@@ -233,7 +229,7 @@ sudo chown -R torrent-bot:torrent-bot /mnt/data/trackers /mnt/data/downloaded
    ```bash
    ssh user@your-server
 
-   cd /opt/torrent-bot-project
+   cd /opt/torrent-bot
    git pull
 
    source /opt/torrent-bot-venv/bin/activate
