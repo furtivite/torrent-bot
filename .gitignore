@@ -1,1 +1,15 @@
 /etc/torrent-bot.env
+
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments (local)
+venv/
+.venv/
+opt/torrent-bot-venv/
+
+# OS / editor noise
+.DS_Store
+*.swp
+*.swo

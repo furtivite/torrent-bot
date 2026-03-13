@@ -25,7 +25,7 @@ class DummyContext:
     bot = None
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_handle_magnet_success(monkeypatch):
     calls = {}
 
@@ -72,7 +72,7 @@ async def test_handle_magnet_success(monkeypatch):
     assert any("🧲 Magnet получен от @user1" in t for t in sent_notifications)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_handle_magnet_error_from_transmission(monkeypatch):
     async def fake_deny_access(update):
         pass

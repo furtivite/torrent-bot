@@ -1,6 +1,6 @@
 from telegram import ReplyKeyboardRemove, Update
 
-from config import ALLOWED_USERNAMES
+from ..config import ALLOWED_USERNAMES
 
 
 def get_username(update: Update) -> str:

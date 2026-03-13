@@ -2,16 +2,16 @@ import asyncio
 import logging
 import time
 
-from config import CHECK_INTERVAL_SECONDS, STALL_MINUTES
-from state import (
+from .config import CHECK_INTERVAL_SECONDS, STALL_MINUTES
+from .state import (
     completed_reported,
     seen_torrents,
     stalled_since,
 )
-import state
-from transmission_client import get_client
-from utils.disk import disk_report, format_bytes
-from utils.notify import tg_send, tg_send_error
+from . import state
+from .transmission_client import get_client
+from .utils.disk import disk_report, format_bytes
+from .utils.notify import tg_send, tg_send_error
 
 log = logging.getLogger("torrent-bot")
 
