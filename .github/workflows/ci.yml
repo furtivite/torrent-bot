@@ -45,6 +45,6 @@ jobs:
 
       - name: Run ruff (lint)
         run: |
-          ruff check opt/torrent-bot tests
+          ruff check opt/torrent_bot tests
 
 
