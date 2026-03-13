@@ -201,6 +201,7 @@ sudo systemctl status torrent-bot.service
 - Более подробное описание архитектуры и потоков данных: `docs/overview.md`.
 - Чек‑лист для развёртывания и отладки: `docs/setup-ubuntu-ssh.md`.
 - Требования к настройке Transmission: `docs/transmission-requirements.md`.
+- Обновление уже установленного бота: `docs/how-to-update.md`.
 
 ---
 
