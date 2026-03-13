@@ -1,14 +1,14 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
-from config import (
+from ..config import (
     CERT_FILE_PATH,
     TRANSMISSION_PASSWORD,
     TRANSMISSION_USERNAME,
     WEB_UI_URL,
 )
-from telegram_ui import cert_os_keyboard, help_menu_keyboard, home_question_keyboard
-from utils.auth import deny_access, is_authorized
+from ..telegram_ui import cert_os_keyboard, help_menu_keyboard, home_question_keyboard
+from ..utils.auth import deny_access, is_authorized
 
 
 def back_to_help_keyboard() -> InlineKeyboardMarkup:

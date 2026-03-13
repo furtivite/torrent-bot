@@ -1,14 +1,14 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from handlers.commands import (
+from .commands import (
     build_torrents_page_keyboard,
     build_torrents_page_text,
     fetch_torrents,
     space_cmd,
     torrents_cmd,
 )
-from telegram_ui import (
+from ..telegram_ui import (
     HELP_BUTTON,
     MAGNET_BUTTON,
     RESTART_TRANSMISSION_BUTTON,
@@ -19,9 +19,9 @@ from telegram_ui import (
     main_menu_keyboard,
     start_inline_keyboard,
 )
-from transmission_client import get_client
-from utils.auth import deny_access, is_authorized
-from utils.disk import disk_report
+from ..transmission_client import get_client
+from ..utils.auth import deny_access, is_authorized
+from ..utils.disk import disk_report
 
 
 async def help_cmd(update, context):
