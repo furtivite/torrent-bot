@@ -1,6 +1,6 @@
 import transmission_rpc
 
-from config import (
+from .config import (
     TRANSMISSION_HOST,
     TRANSMISSION_PASSWORD,
     TRANSMISSION_PORT,

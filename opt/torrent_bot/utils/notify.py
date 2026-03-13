@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from config import BOT_TOKEN, CHAT_ID
+from ..config import BOT_TOKEN, CHAT_ID
 
 log = logging.getLogger("torrent-bot")
 

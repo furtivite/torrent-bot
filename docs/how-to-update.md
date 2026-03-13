@@ -22,7 +22,7 @@ ssh user@your-server
 Перейдите в каталог проекта и подтяните последние изменения:
 
 ```bash
-cd /opt/torrent-bot-project
+cd /opt/torrent-bot
 git pull
 ```
 
@@ -50,7 +50,7 @@ deactivate
 
 ## 4. Проверить systemd‑юнит (при изменении структуры)
 
-Если вы переходите с старой структуры на новую (`/opt/torrent-bot-project/opt/torrent-bot/app.py`),
+Если вы переходите с старой структуры на новую или переносите код,
 убедитесь, что юнит `/etc/systemd/system/torrent-bot.service` указывает на правильные пути.
 
 Рекомендуемый вариант:
@@ -59,8 +59,8 @@ deactivate
 [Service]
 Type=simple
 User=torrent-bot
-WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot
-ExecStart=/opt/torrent-bot-venv/bin/python app.py
+WorkingDirectory=/opt/torrent-bot
+ExecStart=/opt/torrent-bot-venv/bin/python -m opt.torrent_bot.app
 Environment=PYTHONUNBUFFERED=1
 EnvironmentFile=/etc/torrent-bot.env
 ```

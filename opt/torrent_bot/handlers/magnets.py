@@ -1,9 +1,9 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from transmission_client import get_client
-from utils.auth import deny_access, get_username, is_authorized
-from utils.notify import tg_send
+from ..transmission_client import get_client
+from ..utils.auth import deny_access, get_username, is_authorized
+from ..utils.notify import tg_send
 
 
 def looks_like_magnet(text: str) -> bool:
