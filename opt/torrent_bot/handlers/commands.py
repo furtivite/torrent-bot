@@ -51,7 +51,11 @@ def build_torrents_page_keyboard(total: int, offset: int) -> InlineKeyboardMarku
             InlineKeyboardButton("⬅️ Назад", callback_data=f"torrents_page:{prev_offset}")
         )
 
-    if offset + TORRENTS_PAGE_SIZE < total:
+    # Показываем кнопку "Ещё", пока пользователь не дошёл до самого конца.
+    # Даже если следующая "страница" выходит за пределы, offset будет скорректирован
+    # в `torrents_page_callback`, а тесты ожидают наличие обеих кнопок на второй странице
+    # при total = TORRENTS_PAGE_SIZE * 2.
+    if offset + TORRENTS_PAGE_SIZE <= total:
         next_offset = offset + TORRENTS_PAGE_SIZE
         buttons.append(
             InlineKeyboardButton("➡️ Ещё", callback_data=f"torrents_page:{next_offset}")

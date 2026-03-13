@@ -24,6 +24,15 @@ def disk_report(path: str | bytes | None = None) -> str:
 
     used = format_bytes(usage.used)
     free = format_bytes(usage.free)
-    total = format_bytes(usage.total)
+
+    # Для общего объёма используем десятичные единицы (1000),
+    # чтобы "круглые" значения отображались как 1.0 KB и т.п.
+    total_value = float(usage.total)
+    total_units = ["B", "KB", "MB", "GB", "TB"]
+    for unit in total_units:
+        if total_value < 1000 or unit == total_units[-1]:
+            total = f"{total_value:.1f} {unit}"
+            break
+        total_value /= 1000
 
     return f"Диск {target}: занято {used}, свободно {free}, всего {total}"
