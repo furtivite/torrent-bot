@@ -88,6 +88,8 @@ source /opt/torrent-bot-venv/bin/activate
 
 pip install --upgrade pip
 pip install -r requirements.txt
+
+deactivate
 ```
 
 > Если файла `requirements.txt` нет, установите вручную:
@@ -161,8 +163,14 @@ sudo systemctl status torrent-bot.service
 Убедитесь, что в `torrent-bot.service` указаны:
 
 - корректный путь до virtualenv (`/opt/torrent-bot-venv/bin/python`);
-- рабочая директория (`WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot`);
-- путь к файлу `/etc/torrent-bot.env`.
+- корректный путь к `app.py` внутри репозитория, например:
+
+  ```ini
+  WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot
+  ExecStart=/opt/torrent-bot-venv/bin/python app.py
+  ```
+
+- путь к файлу `/etc/torrent-bot.env` через `EnvironmentFile=/etc/torrent-bot.env`.
 
 ---
 

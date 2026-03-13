@@ -58,12 +58,17 @@ cd torrent-bot-project
 
 ## 5. Виртуальное окружение и зависимости
 
+Рекомендуется создать виртуальное окружение один раз и выполнять установку зависимостей от имени
+того пользователя, который будет разворачивать код (не от root).
+
 ```bash
 python3.12 -m venv /opt/torrent-bot-venv
 source /opt/torrent-bot-venv/bin/activate
 
 pip install --upgrade pip
 pip install -r requirements.txt  # или см. README.md для ручной установки
+
+deactivate
 ```
 
 ---
@@ -128,8 +133,19 @@ sudo cp /opt/torrent-bot-project/etc/systemd/system/torrent-bot.service /etc/sys
 
 Убедитесь, что в `/etc/systemd/system/torrent-bot.service`:
 
-- `ExecStart` указывает на `/opt/torrent-bot-venv/bin/python /opt/torrent-bot/app.py` (или актуальный путь из репозитория);
-- `WorkingDirectory` указывает на каталог `opt/torrent-bot` внутри проекта;
+- `ExecStart` указывает на Python из virtualenv и путь к `app.py` внутри репозитория:
+
+  ```ini
+  ExecStart=/opt/torrent-bot-venv/bin/python /opt/torrent-bot-project/opt/torrent-bot/app.py
+  ```
+
+  или эквивалентно:
+
+  ```ini
+  WorkingDirectory=/opt/torrent-bot-project/opt/torrent-bot
+  ExecStart=/opt/torrent-bot-venv/bin/python app.py
+  ```
+
 - указан `EnvironmentFile=/etc/torrent-bot.env`.
 
 Далее:
@@ -172,17 +188,30 @@ sudo systemctl status torrent-bot.service
 
 ---
 
-## 10. Обновление бота
+## 10. Обновление бота из GitHub по SSH
 
-```bash
-ssh user@your-server
-cd /opt/torrent-bot-project
-git pull
-source /opt/torrent-bot-venv/bin/activate
-pip install -r requirements.txt
+1. На локальной машине:
 
-sudo systemctl restart torrent-bot.service
-```
+   ```bash
+   git push origin main  # или ваша основная ветка
+   ```
+
+2. На сервере по SSH:
+
+   ```bash
+   ssh user@your-server
+
+   cd /opt/torrent-bot-project
+   git pull
+
+   source /opt/torrent-bot-venv/bin/activate
+   pip install -r requirements.txt
+   deactivate
+
+   sudo systemctl daemon-reload
+   sudo systemctl restart torrent-bot.service
+   sudo systemctl status torrent-bot.service
+   ```
 
 ---
 
